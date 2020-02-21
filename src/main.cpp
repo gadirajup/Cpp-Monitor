@@ -7,9 +7,4 @@
 int main() {
   System system;
   NCursesDisplay::Display(system);
-
-  std::vector<std::string> memU = LinuxParser::CpuUtilization();
-  for(auto i: memU) {
-    std::cout << i << std::endl;
-  }
 }

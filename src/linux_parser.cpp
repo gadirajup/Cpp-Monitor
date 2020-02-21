@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "linux_parser.h"
 
@@ -57,6 +58,7 @@ vector<int> LinuxParser::Pids() {
       // Is every character of the name a digit?
       string filename(file->d_name);
       if (std::all_of(filename.begin(), filename.end(), isdigit)) {
+        std::cout << filename << std::endl;
         int pid = stoi(filename);
         pids.push_back(pid);
       }
@@ -104,7 +106,7 @@ long LinuxParser::UpTime() {
     std::istringstream stringstream(line);
     stringstream >> value;
   }
-  return std::stoi(value);
+  return std::stol(value);
 }
 
 // TODO: Read and return the number of jiffies for the system
@@ -148,17 +150,19 @@ int LinuxParser::TotalProcesses() {
   string key;
   string value;
 
+  int v;
   std::ifstream filestream(kProcDirectory+kStatFilename);
   if (filestream.is_open()){
-    getline(filestream, line);
-    std::istringstream stringstream(line);
-    if(stringstream >> key){
-      if(key == "processes") {
-       stringstream >> value;
+  while(std::getline(filestream, line)) {
+      std::istringstream stringstream(line);
+      while(stringstream >> key >> value) {
+        if(key == "processes") {
+          v = std::stoi(value);
+        }
       }
     }
   }
-  return std::stoi(value); 
+  return v; 
 }
 
 // TODO: Read and return the number of running processes
