@@ -5,56 +5,65 @@
 using std::string;
 
 // TODO: Return the aggregate CPU utilization
-float Processor::Utilization() { 
-  string line;
-  string cpu;
-  float one;
-  float two;
-  float three;
-  float four;
-  float five;
-  float six;
-  float seven;
-  float eight;
-  float nine;
-  float ten;
+float Processor::Utilization() {
+  vector<double> values = ReadFile();
+  double user = values[0];
+  double nice = values[1];
+  double system = values[2];
+  double idle = values[3];
+  double iowait = values[4];
+  double irq = values[5];
+  double softirq = values[6];
+  double steal = values[7];
 
-  std::ifstream filestream(LinuxParser::kProcDirectory+LinuxParser::kStatFilename);
-  if(filestream.is_open()){
-    while(getline(filestream, line)){
-      std::istringstream stringstream(line);
-      stringstream >> cpu >> one >> two >> three >> four >> five >> six >> seven >> eight >> nine >> ten;
+  double PrevIdle = previdle + previowait;
+  double Idle = idle + iowait;
 
+  double PrevNonIdle =
+      prevuser + prevnice + prevsystem + previrq + prevsoftirq + prevsteal;
+  double NonIdle = user + nice + system + irq + softirq + steal;
+
+  double PrevTotal = PrevIdle + PrevNonIdle;
+  double Total = Idle + NonIdle;
+
+  double totald = Total - PrevTotal;
+
+  double idled = Idle - PrevIdle;
+
+  double CPU_Percentage = (totald - idled) / totald;
+
+  AssignPrevValues(values);
+  return CPU_Percentage;
+}
+
+void Processor::AssignPrevValues(vector<double> newValues) {
+  prevuser = newValues[0];
+  prevnice = newValues[1];
+  prevsystem = newValues[2];
+  previdle = newValues[3];
+  previowait = newValues[4];
+  previrq = newValues[5];
+  prevsoftirq = newValues[6];
+  prevsteal = newValues[7];
+}
+
+vector<double> Processor::ReadFile() {
+  string line, key;
+  double value;
+  vector<double> cpuNumbers;
+  std::ifstream stream(LinuxParser::kProcDirectory +
+                       LinuxParser::kStatFilename);
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key) {
+        if (key == "cpu") {
+          while (linestream >> value) {
+            cpuNumbers.emplace_back(value);
+          }
+        }
+      }
     }
   }
-
-  //std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-  string cpu2;
-  string line2;
-  float one2;
-  float two2;
-  float three2;
-  float four2;
-  float five2;
-  float six2;
-  float seven2;
-  float eight2;
-  float nine2;
-  float ten2;
-
-  std::ifstream filestream2(LinuxParser::kProcDirectory+LinuxParser::kStatFilename);
-  if(filestream.is_open()){
-    while(getline(filestream2, line2)){
-      std::istringstream stringstream2(line2);
-      stringstream2 >> cpu2 >> one2 >> two2 >> three2 >> four2 >> five2 >> six2 >> seven2 >> eight2 >> nine2 >> ten2;
-
-    }
-  }
-
-  const float activeTime = (one2 + two2 + three2 + six2 + seven2 + eight2 + nine2 + ten2) - (one + two + three + six + seven + eight + nine + ten);
-  const float idleTime = (four2 + five2) - (four + five);
-  const float totalTime = activeTime + idleTime;
-
-  return 100*(activeTime / totalTime); 
+  return cpuNumbers;
 }
