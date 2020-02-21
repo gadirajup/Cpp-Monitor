@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "linux_parser.h"
-#include "parser_consts.h"
 #include "parser_helper.h"
 
 using std::stof;
@@ -17,7 +16,7 @@ string LinuxParser::OperatingSystem() {
   string line;
   string key;
   string value;
-  std::ifstream filestream(ParserConsts::kOSPath);
+  std::ifstream filestream(LinuxParser::kOSPath);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::replace(line.begin(), line.end(), ' ', '_');
@@ -39,8 +38,8 @@ string LinuxParser::OperatingSystem() {
 string LinuxParser::Kernel() {
   string os, version, kernel;
   string line;
-  std::ifstream stream(ParserConsts::kProcDirectory +
-                       ParserConsts::kVersionFilename);
+  std::ifstream stream(LinuxParser::kProcDirectory +
+                       LinuxParser::kVersionFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
@@ -52,7 +51,7 @@ string LinuxParser::Kernel() {
 // BONUS: Update this to use std::filesystem
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
-  DIR* directory = opendir(ParserConsts::kProcDirectory.c_str());
+  DIR* directory = opendir(LinuxParser::kProcDirectory.c_str());
   struct dirent* file;
   while ((file = readdir(directory)) != nullptr) {
     // Is this a directory?
@@ -71,9 +70,9 @@ vector<int> LinuxParser::Pids() {
 
 float LinuxParser::MemoryUtilization() {
   float memTotal = ParserHelper::GetValueByKey<int>(
-      ParserConsts::filterMemTotalString, ParserConsts::kMeminfoFilename);
+      LinuxParser::filterMemTotalString, LinuxParser::kMeminfoFilename);
   float memFree = ParserHelper::GetValueByKey<int>(
-      ParserConsts::filterMemFreeString, ParserConsts::kMeminfoFilename);
+      LinuxParser::filterMemFreeString, LinuxParser::kMeminfoFilename);
 
   float memory = (memTotal - memFree) / memTotal;
 
@@ -82,25 +81,25 @@ float LinuxParser::MemoryUtilization() {
 
 long LinuxParser::UpTime() {
   string line;
-  long upTime = ParserHelper::GetValue<long>(ParserConsts::kUptimeFilename);
+  long upTime = ParserHelper::GetValue<long>(LinuxParser::kUptimeFilename);
   return upTime;
 }
 
 int LinuxParser::TotalProcesses() {
-  return ParserHelper::GetValueByKey<int>(ParserConsts::filterProcesses,
-                                          ParserConsts::kStatFilename);
+  return ParserHelper::GetValueByKey<int>(LinuxParser::filterProcesses,
+                                          LinuxParser::kStatFilename);
 }
 
 int LinuxParser::RunningProcesses() {
-  return ParserHelper::GetValueByKey<int>(ParserConsts::filterRunningProcesses,
-                                          ParserConsts::kStatFilename);
+  return ParserHelper::GetValueByKey<int>(LinuxParser::filterRunningProcesses,
+                                          LinuxParser::kStatFilename);
 }
 
 string LinuxParser::UserByUID(int UID) {
   string line, user, x;
   int fileUid;
 
-  std::ifstream filestream(ParserConsts::kPasswordPath);
+  std::ifstream filestream(LinuxParser::kPasswordPath);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::replace(line.begin(), line.end(), ':', ' ');

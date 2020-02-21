@@ -8,7 +8,6 @@
 
 #include "format.h"
 #include "linux_parser.h"
-#include "parser_consts.h"
 #include "parser_helper.h"
 #include "process.h"
 
@@ -38,7 +37,7 @@ double Process::CpuUtilization() {
 
 string Process::Command() {
   string cmd = ParserHelper::GetValue<string>(to_string(pid_) +
-                                              ParserConsts::kCmdlineFilename);
+                                              LinuxParser::kCmdlineFilename);
   size_t maxSize = 50;
   if(cmd.size() > maxSize) {
     cmd.resize(maxSize - 3);
@@ -49,8 +48,8 @@ string Process::Command() {
 
 float Process::RawRam() {
   float memInKB = ParserHelper::GetValueByKey<float>(
-      ParserConsts::filterProcMem,
-      to_string(pid_) + ParserConsts::kStatusFilename);
+      LinuxParser::filterProcMem,
+      to_string(pid_) + LinuxParser::kStatusFilename);
   return memInKB;
 }
 
@@ -61,7 +60,7 @@ string Process::Ram() {
 
 string Process::User() {
   int UID = ParserHelper::GetValueByKey<int>(
-      ParserConsts::filterUID, to_string(pid_) + ParserConsts::kStatusFilename);
+      LinuxParser::filterUID, to_string(pid_) + LinuxParser::kStatusFilename);
 
   string user = LinuxParser::UserByUID(UID);
   return user;
@@ -77,8 +76,8 @@ long int Process::UpTime() {
 vector<string> Process::ReadFile(int pid) {
   string line, skip;
 
-  std::ifstream stream(ParserConsts::kProcDirectory + to_string(pid) +
-                       ParserConsts::kStatFilename);
+  std::ifstream stream(LinuxParser::kProcDirectory + to_string(pid) +
+                       LinuxParser::kStatFilename);
 
   getline(stream, line);
   istringstream linestream(line);

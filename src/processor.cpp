@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "parser_consts.h"
+#include "linux_parser.h"
 #include "parser_helper.h"
 
 using std::string;
@@ -55,13 +55,13 @@ vector<double> Processor::ReadFile() {
   string line, key;
   double value;
   vector<double> cpuNumbers;
-  std::ifstream stream(ParserConsts::kProcDirectory +
-                       ParserConsts::kStatFilename);
+  std::ifstream stream(LinuxParser::kProcDirectory +
+                       LinuxParser::kStatFilename);
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
       while (linestream >> key) {
-        if (key == ParserConsts::filterCpu) {
+        if (key == LinuxParser::filterCpu) {
           while (linestream >> value) {
             cpuNumbers.emplace_back(value);
           }
