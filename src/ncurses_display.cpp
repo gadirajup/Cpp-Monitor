@@ -52,15 +52,15 @@ void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
   wrefresh(window);
 }
 
-void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
+void NCursesDisplay::DisplayProcesses(std::vector<Process> processes,
                                       WINDOW* window, int n) {
   int row{0};
   int const pid_column{2};
   int const user_column{9};
-  int const cpu_column{16};
-  int const ram_column{26};
-  int const time_column{35};
-  int const command_column{46};
+  int const cpu_column{20};
+  int const ram_column{28};
+  int const time_column{37};
+  int const command_column{48};
   wattron(window, COLOR_PAIR(2));
   mvwprintw(window, ++row, pid_column, "PID");
   mvwprintw(window, row, user_column, "USER");
@@ -99,7 +99,7 @@ void NCursesDisplay::Display(System& system, int n) {
     box(system_window, 0, 0);
     box(process_window, 0, 0);
     DisplaySystem(system, system_window);
-    DisplayProcesses(system.Processes(), process_window, n);
+    DisplayProcesses(system.Processes().GetProcesses(), process_window, n);
     wrefresh(system_window);
     wrefresh(process_window);
     refresh();

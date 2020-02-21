@@ -1,31 +1,28 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
-#include <vector>
 #include <string>
-#include <fstream>
-#include "linux_parser.h"
+#include <vector>
 
-using std::vector;
 using std::string;
+using std::vector;
 
 class Processor {
- public:
-  float Utilization();  // TODO: See src/processor.cpp
-
-  // TODO: Declare any necessary private members
  private:
- int previdle;
- int previowait;
- int prevuser;
- int prevnice;
- int prevsystem;
- int previrq;
- int prevsoftirq;
- int prevsteal;
+  int previdle;
+  int previowait;
+  int prevuser;
+  int prevnice;
+  int prevsystem;
+  int previrq;
+  int prevsoftirq;
+  int prevsteal;
 
- void AssignPrevValues(vector<double>);
- vector<double> ReadFile();
+  void AssignPrevValues(vector<double>);
+  vector<double> ReadFile();
+
+ public:
+  double Utilization();
 };
 
 #endif

@@ -1,10 +1,11 @@
+#include <iostream>
 #include "ncurses_display.h"
 #include "system.h"
-#include "linux_parser.h"
-#include "iostream"
-#include <string>
+#include "process.h"
+
+
 
 int main() {
   System system;
-  NCursesDisplay::Display(system);
+  NCursesDisplay::Display(system, 20);
 }

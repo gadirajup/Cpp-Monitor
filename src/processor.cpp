@@ -1,11 +1,15 @@
 #include "processor.h"
+#include <sstream>
 #include <string>
-#include "linux_parser.h"
+#include <vector>
+
+#include "parser_consts.h"
+#include "parser_helper.h"
 
 using std::string;
+using std::vector;
 
-// TODO: Return the aggregate CPU utilization
-float Processor::Utilization() {
+double Processor::Utilization() {
   vector<double> values = ReadFile();
   double user = values[0];
   double nice = values[1];
@@ -51,13 +55,13 @@ vector<double> Processor::ReadFile() {
   string line, key;
   double value;
   vector<double> cpuNumbers;
-  std::ifstream stream(LinuxParser::kProcDirectory +
-                       LinuxParser::kStatFilename);
+  std::ifstream stream(ParserConsts::kProcDirectory +
+                       ParserConsts::kStatFilename);
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
       while (linestream >> key) {
-        if (key == "cpu") {
+        if (key == ParserConsts::filterCpu) {
           while (linestream >> value) {
             cpuNumbers.emplace_back(value);
           }
